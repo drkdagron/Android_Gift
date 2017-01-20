@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
@@ -22,6 +23,19 @@
             android:layout_alignParentBottom="false"
             android:layout_centerInParent="true">
 
+            <ImageView
+                app:srcCompat="@drawable/present"
+                android:id="@+id/imageView"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/title"
+                android:id="@+id/imageView2" />
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -38,19 +52,26 @@
                 android:id="@+id/ent_password"
                 android:hint="Password" />
 
+            <CheckBox
+                android:text="Auto Login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/check_autologin"
+                android:gravity="center|start" />
+
             <Button
                 android:text="Login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/btn_signin" />
+                android:id="@+id/btn_signin"
+                android:onClick="login" />
 
-            <TextView
+            <Button
                 android:text="Register"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/lbl_register"
-                android:paddingTop="10dp"
-                android:textAlignment="center" />
+                android:onClick="register"/>
 
         </LinearLayout>
     </RelativeLayout>

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GiftTracker.iml" filepath="$PROJECT_DIR$/GiftTracker.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/droid_gift.iml" filepath="$PROJECT_DIR$/droid_gift.iml" />
     </modules>
   </component>
 </project>

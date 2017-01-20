@@ -48,39 +48,44 @@ public class Register extends AppCompatActivity {
     {
         String username = user.getText().toString();
         String password = pass.getText().toString();
+        String first = firstName.getText().toString();
+        String last = lastName.getText().toString();
+        String name = first + " " + last;
 
         JSONObject json = new JSONObject();
         StringEntity entity;
         try {
             json.put("username", username);
             json.put("password", password);
-            json.put("fullname", firstName.getText().toString() + " " + lastName.getText().toString());
+            json.put("fullname", name);
 
             entity = new StringEntity(json.toString());
 
             API.post(this, "account/create", entity, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Toast.makeText(getBaseContext(), "1" + String.valueOf(statusCode) + response.toString(), Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                    Toast.makeText(getBaseContext(), "2" + String.valueOf(statusCode) + response.toString(), Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    Toast.makeText(getBaseContext(), throwable.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Account successfully created. Please sign in", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                    startActivity(intent);
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    Toast.makeText(getBaseContext(), errorResponse.toString(), Toast.LENGTH_LONG).show();
+                    try {
+                        Toast.makeText(getBaseContext(), errorResponse.getString("message"), Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) { }
                 }
             });
         } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }
 
 
+    }
+
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 }
