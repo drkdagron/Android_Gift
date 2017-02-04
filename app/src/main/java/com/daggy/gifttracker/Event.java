@@ -1,5 +1,6 @@
 package com.daggy.gifttracker;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,11 +9,36 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.daggy.gifttracker.dialog.AddItemDialog;
+import com.daggy.gifttracker.dialog.CreateEventDialog;
+import com.daggy.gifttracker.list.ListCommentAdapter;
+import com.daggy.gifttracker.list.ListEventAdapter;
 
 import org.json.JSONException;
 
-public class Event extends AppCompatActivity {
+public class Event extends AppCompatActivity implements API.InterfaceCommunicate{
+
+    public ListCommentAdapter adapter;
+    public ListView list;
+
+    @Override
+    public void sendRequestCode(int i)
+    {
+        Log.e("INTERFACE", "INTERFACE GOT CALLED!!! OMFG");
+        if (i == 1) {
+            UserData.UpdateEventList();
+            adapter = new ListCommentAdapter(this, UserData.arrayOfComments, getFragmentManager());
+            list.setAdapter(adapter);
+        }
+        if (i == 2)
+        {
+            adapter = new ListCommentAdapter(this, UserData.arrayOfComments, getFragmentManager());
+            list.setAdapter(adapter);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +56,13 @@ public class Event extends AppCompatActivity {
             lbl_code.setText("ID: " + UserData.event.getString("ID"));
         }
         catch (JSONException e) { }
+
+        list = (ListView)findViewById(R.id.event_list_comments);
+        adapter = new ListCommentAdapter(this, UserData.arrayOfComments, getFragmentManager());
+        if (UserData.arrayOfComments != null) {
+            if (UserData.arrayOfComments.size() != 0)
+                list.setAdapter(adapter);
+        }
     }
 
     @Override
@@ -55,12 +88,19 @@ public class Event extends AppCompatActivity {
         {
             case R.id.menu_eventinfo_delete:
             {
+                UserData.ShowDialog(this, "Removing Event");
                 API.delete_event(this);
                 return true;
             }
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void AddItemDialog(View v)
+    {
+        DialogFragment newFragment = new AddItemDialog();
+        newFragment.show(getFragmentManager(), "CreateComment");
     }
 
     public void event_backToMenu(View v)

@@ -56,7 +56,8 @@
         android:layout_alignParentLeft="false"
         android:layout_alignParentStart="false"
         android:layout_below="@+id/lay_event_idpin"
-        android:layout_above="@+id/lay_eventinfo_backbtn" />
+        android:layout_above="@+id/lay_eventinfo_backbtn"
+        android:id="@+id/event_list_comments" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -71,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_alignParentBottom="true"
-            android:onClick="event_backToMenu"/>
+            android:onClick="AddItemDialog" />
 
         <Button
             android:text="Back"

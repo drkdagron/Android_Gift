@@ -43,6 +43,7 @@ public class CreateEventDialog extends DialogFragment {
             .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    UserData.ShowDialog(getActivity(), "Creating Event");
                     //Toast.makeText(getActivity().getBaseContext(), "CREATE CLICKED", Toast.LENGTH_SHORT).show();
                     EditText name = (EditText)v.findViewById(R.id.edit_create_name);
                     EditText pin = (EditText)v.findViewById(R.id.edit_create_pin);

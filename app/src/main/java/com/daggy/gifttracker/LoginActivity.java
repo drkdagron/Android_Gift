@@ -1,5 +1,6 @@
 package com.daggy.gifttracker;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,12 +39,11 @@ public class LoginActivity extends AppCompatActivity {
         check = (CheckBox)findViewById(R.id.check_autologin);
 
         SharedPreferences sharedPref = getSharedPreferences("GiftTracker", Context.MODE_PRIVATE);
+        user.setText(sharedPref.getString("SavedUsername", ""));
+        pass.setText(sharedPref.getString("SavedPassword", ""));
         if (sharedPref.getBoolean("SavedAccount", false))
         {
-            user.setText(sharedPref.getString("SavedUsername", ""));
-            pass.setText(sharedPref.getString("SavedPassword", ""));
             check.setChecked(sharedPref.getBoolean("SavedAccount", false));
-
             fastlogin();
         }
     }
@@ -61,6 +61,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View v)
     {
+        UserData.ShowDialog(this, "Logging in");
         API.Login(this, user.getText().toString(), pass.getText().toString(), check.isChecked());
+
     }
 }

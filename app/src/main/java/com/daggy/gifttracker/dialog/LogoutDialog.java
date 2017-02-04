@@ -25,6 +25,7 @@ public class LogoutDialog extends DialogFragment {
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    UserData.ShowDialog(getActivity(), "Logging out");
                     UserData.user = null;
                     UserData.event = null;
 
@@ -35,6 +36,7 @@ public class LogoutDialog extends DialogFragment {
 
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
+                    UserData.HideDialog();
                 }
             })
             .setNegativeButton("No", new DialogInterface.OnClickListener() {

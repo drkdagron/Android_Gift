@@ -46,6 +46,7 @@ public class Register extends AppCompatActivity {
 
     protected void registerUser(View v)
     {
+        UserData.ShowDialog(this, "Registering User");
         String username = user.getText().toString();
         String password = pass.getText().toString();
         String first = firstName.getText().toString();
@@ -67,6 +68,7 @@ public class Register extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "Account successfully created. Please sign in", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                     startActivity(intent);
+                    UserData.HideDialog();
                 }
 
                 @Override
@@ -74,6 +76,7 @@ public class Register extends AppCompatActivity {
                     try {
                         Toast.makeText(getBaseContext(), errorResponse.getString("message"), Toast.LENGTH_LONG).show();
                     } catch (JSONException e) { }
+                    UserData.HideDialog();
                 }
             });
         } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }

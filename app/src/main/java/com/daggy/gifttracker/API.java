@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import com.daggy.gifttracker.model.AddItemModel;
 import com.daggy.gifttracker.model.CreateEventModel;
 import com.daggy.gifttracker.model.ItemEventModel;
 import com.daggy.gifttracker.model.JoinEventModel;
@@ -31,11 +32,19 @@ public class API {
         void sendRequestCode(int code);
     }
 
-    private static final String base_url = "http://192.168.0.16:3000/";
+    //private static final String base_url = "https://api-gift-track.herokuapp.com/";
+    private static final String base_url = "http://192.168.0.10:3000/";
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public static void post(Context context, String url, HttpEntity params, AsyncHttpResponseHandler handler) {
         client.post(context, base_url + url, params, "application/json" ,handler);
+    }
+    public static void put(Context context, String url, HttpEntity params, AsyncHttpResponseHandler handler) {
+        client.put(context, base_url + url, params, "application/json", handler);
+    }
+
+    public static void del(Context context, String url, HttpEntity params, AsyncHttpResponseHandler handler) {
+        client.delete(context, base_url + url, params, "application/json", handler);
     }
 
     public static void post_CreateEvent(final Activity context, CreateEventModel c)
@@ -63,6 +72,8 @@ public class API {
                     try {
                         Toast.makeText(context, errorResponse.getString("message"), Toast.LENGTH_LONG).show();
                     } catch (JSONException e) { }
+
+                    UserData.HideDialog();
                 }
             });
         } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }
@@ -112,6 +123,8 @@ public class API {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     try {
                         UserData.event = response.getJSONObject("data");
+                        UserData.UpdateItemList();
+                        UserData.HideDialog();
                         Intent intent = new Intent(context, Event.class);
                         context.startActivity(intent);
                     } catch (JSONException e) { }
@@ -122,11 +135,13 @@ public class API {
                     try {
                         Toast.makeText(context, errorResponse.getString("message"), Toast.LENGTH_LONG).show();
                     } catch (JSONException e) { }
+                    UserData.HideDialog();
                 }
             });
         } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }
     }
 
+    //
     public static void Login(final Activity context, String user, String pass, final boolean save)
     {
         final String username = user;
@@ -151,10 +166,10 @@ public class API {
 
                         SharedPreferences sharedPref = context.getSharedPreferences("GiftTracker", Context.MODE_PRIVATE);
                         SharedPreferences.Editor edit = sharedPref.edit();
+                        edit.putString("SavedUsername", username);
+                        edit.putString("SavedPassword", password);
                         if (save)
                         {
-                            edit.putString("SavedUsername", username);
-                            edit.putString("SavedPassword", password);
                             edit.putBoolean("SavedAccount", true);
                             edit.commit();
                         }
@@ -162,6 +177,8 @@ public class API {
                             edit.putBoolean("SavedAccount", false);
                             edit.commit();
                         }
+
+                        UserData.HideDialog();
 
                     } catch (JSONException e) { }
                     Intent intent = new Intent(context.getBaseContext(), Main.class);
@@ -173,6 +190,8 @@ public class API {
                     try {
                         Toast.makeText(context.getBaseContext(), errorResponse.getString("message"), Toast.LENGTH_LONG).show();
                     } catch (JSONException e) { }
+
+                    UserData.HideDialog();
                 }
             });
         } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }
@@ -197,6 +216,8 @@ public class API {
                         interfaceCommunicate = (InterfaceCommunicate)context;
                         interfaceCommunicate.sendRequestCode(1);
 
+                        UserData.HideDialog();
+
                     } catch (JSONException e) { }
                 }
 
@@ -205,6 +226,7 @@ public class API {
                     try {
                         Toast.makeText(context.getBaseContext(), errorResponse.getString("message"), Toast.LENGTH_LONG).show();
                     } catch (JSONException e) { }
+                    UserData.HideDialog();
                 }
             });
         } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }
@@ -227,6 +249,7 @@ public class API {
                     } catch (JSONException e) { };
                     Intent intent = new Intent(context, Main.class);
                     context.startActivity(intent);
+                    UserData.HideDialog();
                 }
 
                 @Override
@@ -234,6 +257,108 @@ public class API {
                     try {
                         Toast.makeText(context.getBaseContext(), errorResponse.getString("message"), Toast.LENGTH_LONG).show();
                     } catch (JSONException e) { }
+                    UserData.HideDialog();
+                }
+            });
+        } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }
+    }
+
+    public static void post_CreateComment(final Activity context, AddItemModel a)
+    {
+        JSONObject json = new JSONObject();
+        StringEntity entity;
+        try {
+            json.put("OwnerId", a.OwnerId);
+            json.put("OwnerName", a.OwnerName);
+            json.put("EventId", UserData.event.getString("_id"));
+            json.put("Comment", a.Comment);
+
+            entity = new StringEntity(json.toString());
+
+            API.post(context, "event/comment/create", entity, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        UserData.event = response.getJSONObject("data");
+                        UserData.UpdateItemList();
+
+                        interfaceCommunicate = (InterfaceCommunicate)context;
+                        interfaceCommunicate.sendRequestCode(1);
+
+                        UserData.HideDialog();
+                    } catch (JSONException e) { }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    try {
+                        Toast.makeText(context.getBaseContext(), errorResponse.getString("message"), Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) { }
+                    UserData.HideDialog();
+                }
+            });
+        } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }
+    }
+
+    public static void put_EditComment(final Activity context, final String text, String id, final int pos)
+    {
+        JSONObject json = new JSONObject();
+        StringEntity entity;
+        try {
+            json.put("ID", id);
+            json.put("comment", text);
+
+            entity = new StringEntity(json.toString());
+
+            API.put(context, "event/comment/edit", entity, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        UserData.arrayOfComments.get(pos).Comment = text;
+
+                        interfaceCommunicate = (InterfaceCommunicate)context;
+                        interfaceCommunicate.sendRequestCode(2);
+
+                        UserData.HideDialog();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    try {
+                        Toast.makeText(context.getBaseContext(), errorResponse.getString("message"), Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) { }
+                    UserData.HideDialog();
+                }
+            });
+        } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }
+    }
+
+    public static void del_DeleteComment(final Activity context, final String id)
+    {
+        JSONObject json = new JSONObject();
+        StringEntity entity;
+        try {
+            json.put("ID", id);
+
+            entity = new StringEntity(json.toString());
+
+            API.del(context, "event/comment/delete", entity, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    UserData.DeleteFromCommentList(id);
+
+                    interfaceCommunicate = (InterfaceCommunicate)context;
+                    interfaceCommunicate.sendRequestCode(2);
+
+                    context.getFragmentManager().beginTransaction().remove(context.getFragmentManager().findFragmentByTag("EditComment")).commit();
+                    UserData.HideDialog();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    try {
+                        Toast.makeText(context.getBaseContext(), errorResponse.getString("message"), Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) { }
+                    UserData.HideDialog();
                 }
             });
         } catch (JSONException e) {} catch (UnsupportedEncodingException e) { }

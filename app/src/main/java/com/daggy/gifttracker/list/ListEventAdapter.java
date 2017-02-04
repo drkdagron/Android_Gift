@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.daggy.gifttracker.API;
 import com.daggy.gifttracker.R;
+import com.daggy.gifttracker.UserData;
 import com.daggy.gifttracker.model.ItemEventModel;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class ListEventAdapter extends ArrayAdapter<ItemEventModel> {
         viewBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                UserData.ShowDialog(getContext(), "Getting Event Info");
                 ItemEventModel model = (ItemEventModel)v.getTag();
 
                 API.post_ViewEvent((Activity)getContext(), model);
